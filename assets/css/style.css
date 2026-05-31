@@ -4,6 +4,15 @@
 =========================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Nunito:wght@300;400;500;600&display=swap');
+@keyframes palpitar {
+  0%, 100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.08);
+  }
+}
 
 /* ---- Variables ---- */
 :root {
@@ -112,6 +121,7 @@ a { text-decoration: none; color: inherit; }
   position: relative;
   z-index: 2;
   max-width: 680px;
+  padding-top: 4rem;
   animation: aparecer-arriba 1.1s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
@@ -126,8 +136,31 @@ a { text-decoration: none; color: inherit; }
   padding: 6px 18px;
   border-radius: 50px;
   margin-bottom: 1.2rem;
-  animation: aparecer 1.4s ease both;
-  animation-delay: 0.3s;
+
+  animation: aparecer 1.4s ease both,
+             palpitar 2s ease-in-out infinite;
+}
+
+@keyframes palpitar {
+  0%, 100% {
+    transform: scale(1);
+  }
+
+  15% {
+    transform: scale(1.08);
+  }
+
+  30% {
+    transform: scale(1);
+  }
+
+  45% {
+    transform: scale(1.12);
+  }
+
+  60% {
+    transform: scale(1);
+  }
 }
 
 .hero-titulo {
@@ -398,6 +431,16 @@ section {
   font-size: 0.92rem;
   color: var(--texto-medio);
 }
+/* Tarjeta principal Falabella */
+.regalo-principal {
+  text-align: center;
+}
+
+.regalo-principal p {
+  max-width: 700px;
+  margin: 0.8rem auto;
+}
+
 
 /* ============================
    GALERÍA / FOTOS
@@ -569,62 +612,124 @@ section {
 /* ============================
    SECCIÓN LISTA DE REGALOS
 ============================ */
+
 .lista-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1.2rem;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.8rem;
 }
 
+/* Tarjeta principal */
+.regalo-principal {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 2rem 1.5rem;
+}
+
+.regalo-principal .regalo-emoji {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.regalo-principal h3 {
+  font-size: 1.8rem;
+  color: var(--texto-oscuro);
+  margin-bottom: 0.8rem;
+}
+
+.regalo-principal p {
+  font-size: 1.15rem;
+  color: var(--texto-medio);
+  margin-bottom: 1.5rem;
+}
+
+/* Código Falabella */
+.regalo-principal strong {
+  display: block;
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--texto-oscuro);
+  margin-top: 0.3rem;
+  letter-spacing: 1px;
+}
+
+/* Botón */
+.regalo-principal .badge-prioridad {
+  display: inline-block;
+  padding: 14px 28px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--texto-oscuro);
+  background: var(--rosa-suave);
+  border-radius: 50px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(232, 127, 166, 0.15);
+}
+
+
+.regalo-principal .badge-prioridad:hover {
+  background: var(--rosa-medio);
+  color: white;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(232, 127, 166, 0.25);
+}
+
+/* Tarjetas secundarias */
 .regalo-card {
   background: white;
   border-radius: var(--radio-md);
-  padding: 1.5rem;
+  padding: 2rem 1.5rem;
   text-align: center;
-  border: 1.5px solid rgba(244, 167, 192, 0.3);
-  box-shadow: 0 4px 20px var(--sombra-suave);
-  transition: transform 0.3s ease;
-  animation: aparecer 0.8s ease both;
+  border: 1.5px solid rgba(244,167,192,0.3);
+  box-shadow: 0 6px 24px var(--sombra-suave);
+  transition: all 0.3s ease;
 }
 
-.regalo-card:hover { transform: translateY(-5px); }
+.regalo-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 14px 36px var(--sombra);
+}
 
-.regalo-emoji { font-size: 2.2rem; margin-bottom: 0.6rem; }
+.regalo-emoji {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
 
 .regalo-card h3 {
-  font-size: 1rem;
-  margin-bottom: 0.3rem;
+  font-size: 1.15rem;
+  margin-bottom: 0.5rem;
+  color: var(--texto-oscuro);
 }
 
 .regalo-card p {
-  font-size: 0.85rem;
-  color: var(--texto-suave);
+  font-size: 0.95rem;
+  color: var(--texto-medio);
 }
 
+/* Etiquetas */
 .badge-prioridad {
   display: inline-block;
-  padding: 3px 12px;
-  border-radius: 50px;
-  font-size: 0.72rem;
-  font-weight: 600;
-  margin-top: 0.6rem;
+  margin-top: 1rem;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
 }
 
 .badge-alta {
   background: var(--rosa-suave);
-  color: #9b2550;
-  font-size: 0.88rem;
-  padding: 10px 24px;
-  cursor: pointer;
-  transition: background 0.2s ease, transform 0.2s ease;
+  color: var(--rosa-fuerte);
 }
 
-.badge-alta:hover {
-  background: var(--rosa-medio);
-  color: #6b1535;
-  transform: scale(1.06);
+.badge-media {
+  background: var(--lila);
+  color: #7d4cb0;
 }
-.badge-media   { background: var(--lila);           color: #8040b0; }
-.badge-baja    { background: var(--menta);          color: #2a8a5a; }
+
+.badge-baja {
+  background: var(--menta);
+  color: #2a8a5a;
+}
 
 /* ============================
    FOOTER
