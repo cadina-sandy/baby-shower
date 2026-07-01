@@ -1,28 +1,28 @@
 /* ==========================================================================
    BABY SHOWER - ESTILOS COMPLETOS Y OPTIMIZADOS
-   Paleta: Rosas y Pasteles · Hecho con amor para Amelia
+   Paleta: Fondo marino pastel · Hecho con amor para Amelia
    ========================================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Nunito:wght@300;400;500;600&display=swap');
 
 /* ---- Variables Globales ---- */
 :root {
-  --rosa-suave:      #f9d6e3;
-  --rosa-medio:      #f4a7c0;
-  --rosa-fuerte:     #e87fa6;
-  --lila:            #e8d5f5;
-  --lila-medio:      #c9a8e8;
-  --menta:           #d4f0e4;
-  --menta-medio:     #95d4b4;
-  --melocoton:       #fde8d8;
-  --melocoton-medio: #f9bfa0;
-  --crema:           #fff8f0;
+  --rosa-suave:      #ffd9e8;
+  --rosa-medio:      #f6aeca;
+  --rosa-fuerte:     #e982af;
+  --lila:            #cfeefa;
+  --lila-medio:      #8fcfe7;
+  --menta:           #d9f5e9;
+  --menta-medio:     #96d9bf;
+  --melocoton:       #e8f8ff;
+  --melocoton-medio: #a9dff0;
+  --crema:           #f7fdff;
   --blanco:          #ffffff;
-  --texto-oscuro:    #5a3a4a;
-  --texto-medio:     #8a5a70;
-  --texto-suave:     #b8899a;
-  --sombra:          rgba(232, 127, 166, 0.18);
-  --sombra-suave:    rgba(180, 100, 140, 0.10);
+  --texto-oscuro:    #3e5862;
+  --texto-medio:     #66818b;
+  --texto-suave:     #8fb0ba;
+  --sombra:          rgba(103, 188, 214, 0.18);
+  --sombra-suave:    rgba(93, 160, 181, 0.10);
   --radio-sm:        12px;
   --radio-md:        20px;
   --radio-lg:        40px;
@@ -41,8 +41,13 @@ html {
 }
 
 body {
+  position: relative;
+  isolation: isolate;
   font-family: 'Nunito', sans-serif;
-  background-color: var(--crema);
+  background:
+    radial-gradient(circle at 18% 8%, rgba(255, 217, 232, 0.34), transparent 24%),
+    radial-gradient(circle at 86% 14%, rgba(207, 238, 250, 0.72), transparent 30%),
+    linear-gradient(180deg, #f8fdff 0%, #edf9fd 48%, #f7fdff 100%);
   color: var(--texto-oscuro);
   overflow-x: hidden;
   line-height: 1.7;
@@ -62,6 +67,192 @@ p  { font-size: 1rem; color: var(--texto-medio); }
 a { 
   text-decoration: none; 
   color: inherit; 
+}
+
+/* ==========================================================================
+   DECORACIÓN MARINA LATERAL
+   ========================================================================== */
+.decoracion-marina {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.animal-marino {
+  position: absolute;
+  width: clamp(96px, 14vw, 190px);
+  height: auto;
+  opacity: 0.78;
+  filter:
+    drop-shadow(0 12px 22px rgba(103, 188, 214, 0.12))
+    drop-shadow(0 2px 8px rgba(246, 174, 202, 0.12));
+  transform-origin: center;
+  animation: nadar-suave 9s ease-in-out infinite alternate;
+  user-select: none;
+}
+
+.animal-pulpo {
+  top: 30vh;
+  left: max(-62px, -4vw);
+  width: clamp(118px, 17vw, 240px);
+  animation-name: flotar-lateral-izq;
+  animation-duration: 9.8s;
+}
+
+.animal-pez {
+  top: 18vh;
+  right: max(-58px, -4vw);
+  width: clamp(120px, 17vw, 235px);
+  animation-name: flotar-lateral-der;
+  animation-duration: 8.6s;
+  animation-delay: 0.8s;
+}
+
+.animal-tortuga {
+  top: 58vh;
+  right: max(-66px, -4.5vw);
+  width: clamp(118px, 17vw, 240px);
+  animation-name: flotar-lateral-der;
+  animation-duration: 11s;
+  animation-delay: 1.2s;
+}
+
+.animal-estrella {
+  top: 22vh;
+  left: max(72px, 7vw);
+  width: clamp(68px, 8vw, 112px);
+  opacity: 0.74;
+  animation-name: flotar-giro-suave;
+  animation-duration: 10.2s;
+  animation-delay: 1.6s;
+}
+
+.animal-cangrejo {
+  bottom: 4vh;
+  left: max(-26px, -1.8vw);
+  width: clamp(112px, 15vw, 210px);
+  animation-name: flotar-cangrejo;
+  animation-duration: 9.4s;
+  animation-delay: 0.4s;
+}
+
+.pulpo-cuerpo {
+  fill: #e8c7e8;
+}
+
+.pulpo-tentaculo {
+  fill: none;
+  stroke: #e3b6df;
+  stroke-width: 11;
+  stroke-linecap: round;
+}
+
+.pez-cuerpo {
+  fill: #ffd0df;
+}
+
+.pez-cola,
+.pez-aleta {
+  fill: #f7b7d2;
+}
+
+.tortuga-caparazon {
+  fill: #e4dfc5;
+}
+
+.tortuga-cabeza,
+.tortuga-aleta {
+  fill: #c9efd9;
+}
+
+.tortuga-linea {
+  fill: none;
+  stroke: rgba(93, 134, 119, 0.42);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.concha-base {
+  fill: #ffd1e3;
+}
+
+.concha-linea {
+  fill: none;
+  stroke: rgba(225, 129, 171, 0.42);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.perla-marina {
+  fill: #fff9fd;
+}
+
+.estrella-cuerpo {
+  fill: #ffc79a;
+}
+
+.animal-ojo,
+.animal-sonrisa {
+  fill: none;
+  stroke: #4f6570;
+  stroke-width: 3.2;
+  stroke-linecap: round;
+}
+
+.animal-ojo-punto {
+  fill: #536771;
+}
+
+.pestanitas {
+  fill: none;
+  stroke: #4f6570;
+  stroke-width: 2.3;
+  stroke-linecap: round;
+}
+
+.rubor {
+  fill: rgba(245, 139, 177, 0.34);
+}
+
+.lacito {
+  fill: #f6aeca;
+  stroke: rgba(225, 129, 171, 0.34);
+  stroke-width: 1.4;
+}
+
+.detalle-claro {
+  fill: rgba(255, 255, 255, 0.62);
+}
+
+@keyframes nadar-suave {
+  from { transform: translate3d(0, 0, 0) rotate(-1deg); }
+  to   { transform: translate3d(8px, -12px, 0) rotate(1.5deg); }
+}
+
+@keyframes flotar-lateral-izq {
+  0%   { transform: translate3d(0, 0, 0) rotate(-2deg); }
+  50%  { transform: translate3d(12px, -18px, 0) rotate(1deg); }
+  100% { transform: translate3d(4px, 10px, 0) rotate(-1deg); }
+}
+
+@keyframes flotar-lateral-der {
+  0%   { transform: translate3d(0, 0, 0) rotate(2deg); }
+  50%  { transform: translate3d(-14px, -16px, 0) rotate(-1deg); }
+  100% { transform: translate3d(-5px, 9px, 0) rotate(1.5deg); }
+}
+
+@keyframes flotar-giro-suave {
+  0%   { transform: translate3d(0, 0, 0) rotate(-8deg); }
+  50%  { transform: translate3d(8px, -14px, 0) rotate(3deg); }
+  100% { transform: translate3d(2px, 7px, 0) rotate(-4deg); }
+}
+
+@keyframes flotar-cangrejo {
+  0%   { transform: translate3d(0, 0, 0) rotate(1deg); }
+  50%  { transform: translate3d(10px, -10px, 0) rotate(-1.5deg); }
+  100% { transform: translate3d(18px, 4px, 0) rotate(1deg); }
 }
 
 /* ==========================================================================
@@ -100,40 +291,82 @@ nav a:hover,
 nav a.activo {
   background: var(--rosa-suave);
   color: var(--rosa-fuerte);
+  font-weight: 800;
 }
 
 /* ==========================================================================
-   DECORACIONES FLOTANTES (Burbujas y Flores)
+   DECORACIONES FLOTANTES (Burbujas)
    ========================================================================== */
 .burbuja {
   position: absolute;
   border-radius: 50%;
-  opacity: 0.55;
+  opacity: 0.7;
   pointer-events: none;
-  animation: flotar infinite ease-in-out;
+  background:
+    radial-gradient(circle at 32% 28%, rgba(255,255,255,0.95) 0 10%, transparent 11%),
+    radial-gradient(circle at 68% 72%, rgba(255,255,255,0.35) 0 12%, transparent 13%),
+    rgba(255, 217, 232, 0.34);
+  border: 1.5px solid rgba(246, 174, 202, 0.5);
+  box-shadow: inset 0 0 18px rgba(255,255,255,0.58), 0 8px 24px rgba(246, 174, 202, 0.2);
+  animation: flotar-burbuja infinite ease-in-out;
+  z-index: 1;
 }
-.burbuja-1 { width: 120px; height: 120px; background: var(--rosa-suave); top: 5%;  left: -4%;  animation-duration: 6s;  animation-delay: 0s;   }
-.burbuja-2 { width: 80px;  height: 80px;  background: var(--lila);       top: 15%; right: -2%; animation-duration: 7s;  animation-delay: 1s;   }
-.burbuja-3 { width: 60px;  height: 60px;  background: var(--menta);      top: 50%; left: 2%;   animation-duration: 5s;  animation-delay: 2s;   }
-.burbuja-4 { width: 100px; height: 100px; background: var(--melocoton);  top: 70%; right: 1%;  animation-duration: 8s;  animation-delay: 0.5s; }
-.burbuja-5 { width: 50px;  height: 50px;  background: var(--rosa-medio); top: 85%; left: 8%;   animation-duration: 6s;  animation-delay: 1.5s; }
+.burbuja-1 { width: 120px; height: 120px; top: 5%;  left: -4%;  animation-duration: 7s;  animation-delay: 0s;   }
+.burbuja-2 { width: 80px;  height: 80px;  top: 15%; right: -2%; animation-duration: 8s;  animation-delay: 1s;   }
+.burbuja-3 { width: 60px;  height: 60px;  top: 50%; left: 2%;   animation-duration: 6s;  animation-delay: 2s;   }
+.burbuja-4 { width: 100px; height: 100px; top: 70%; right: 1%;  animation-duration: 9s;  animation-delay: 0.5s; }
+.burbuja-5 { width: 50px;  height: 50px;  top: 85%; left: 8%;   animation-duration: 7s;  animation-delay: 1.5s; }
+.burbuja-6 { width: 34px;  height: 34px;  top: 12%; left: 22%;  animation-duration: 5.5s; animation-delay: 0.8s; }
+.burbuja-7 { width: 42px;  height: 42px;  top: 32%; right: 18%; animation-duration: 6.8s; animation-delay: 2.4s; }
+.burbuja-8 { width: 24px;  height: 24px;  top: 62%; left: 18%;  animation-duration: 5.2s; animation-delay: 1.1s; }
+.burbuja-9 { width: 68px;  height: 68px;  top: 76%; right: 14%; animation-duration: 8.2s; animation-delay: 0.2s; }
 
-@keyframes flotar {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50%       { transform: translateY(-22px) rotate(8deg); }
+@keyframes flotar-burbuja {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50%      { transform: translate3d(12px, -34px, 0) scale(1.04); }
+}
+
+.conchita-flotante {
+  position: absolute;
+  z-index: 1;
+  pointer-events: none;
+  font-size: clamp(1.15rem, 2.3vw, 2rem);
+  opacity: 0.58;
+  filter: drop-shadow(0 8px 14px rgba(103, 188, 214, 0.12));
+  animation: flotar-conchita 8s ease-in-out infinite alternate;
+}
+
+.conchita-1 { top: 18%; left: 16%; animation-duration: 7.6s; animation-delay: 0.2s; }
+.conchita-2 { top: 36%; right: 13%; animation-duration: 8.8s; animation-delay: 1.4s; }
+.conchita-3 { top: 68%; left: 23%; animation-duration: 7.2s; animation-delay: 0.9s; }
+.conchita-4 { top: 79%; right: 22%; animation-duration: 9.4s; animation-delay: 1.8s; }
+
+@keyframes flotar-conchita {
+  0%   { transform: translate3d(0, 0, 0) rotate(-8deg); }
+  50%  { transform: translate3d(8px, -18px, 0) rotate(5deg); }
+  100% { transform: translate3d(-4px, 8px, 0) rotate(-3deg); }
 }
 
 .flor {
   position: absolute;
-  font-size: 1.6rem;
-  opacity: 0.35;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  font-size: 0;
+  opacity: 0.42;
   pointer-events: none;
-  animation: girar-suave 10s linear infinite;
+  background:
+    radial-gradient(circle at 30% 28%, rgba(255,255,255,0.95) 0 14%, transparent 15%),
+    rgba(255,255,255,0.24);
+  border: 1px solid rgba(255, 255, 255, 0.82);
+  box-shadow: inset 0 0 10px rgba(255,255,255,0.55), 0 8px 20px rgba(143, 207, 231, 0.14);
+  animation: burbuja-suave 10s ease-in-out infinite;
+  z-index: 1;
 }
 
-@keyframes girar-suave {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
+@keyframes burbuja-suave {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50%      { transform: translate3d(-10px, -38px, 0) scale(1.12); }
 }
 
 /* ==========================================================================
@@ -141,6 +374,7 @@ nav a.activo {
    ========================================================================== */
 .hero {
   position: relative;
+  z-index: 1;
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -148,11 +382,19 @@ nav a.activo {
   text-align: center;
   padding: 3rem 1.5rem;
   background:
-    radial-gradient(ellipse at 20% 30%, var(--rosa-suave) 0%, transparent 55%),
-    radial-gradient(ellipse at 80% 70%, var(--lila) 0%, transparent 55%),
-    radial-gradient(ellipse at 50% 50%, var(--melocoton) 0%, transparent 70%),
+    radial-gradient(ellipse at 50% 42%, rgba(255, 255, 255, 0.86) 0%, rgba(255, 255, 255, 0.52) 28%, transparent 56%),
+    radial-gradient(ellipse at 20% 22%, rgba(255, 217, 232, 0.52) 0%, transparent 46%),
+    radial-gradient(ellipse at 82% 24%, rgba(207, 238, 250, 0.92) 0%, transparent 54%),
+    radial-gradient(ellipse at 50% 78%, rgba(217, 245, 233, 0.58) 0%, transparent 62%),
     var(--crema);
+  background-size: 115% 115%;
+  animation: agua-suave 16s ease-in-out infinite alternate;
   overflow: hidden;
+}
+
+@keyframes agua-suave {
+  from { background-position: 0% 0%; }
+  to   { background-position: 7% 4%; }
 }
 
 .hero-contenido {
@@ -242,14 +484,17 @@ nav a.activo {
 }
 
 .btn-principal {
-  background: linear-gradient(135deg, var(--rosa-fuerte), var(--lila-medio));
-  color: white;
-  box-shadow: 0 8px 28px var(--sombra);
+  background: white;
+  color: var(--rosa-fuerte);
+  border: 2px solid var(--rosa-medio);
+  box-shadow: none;
 }
 
 .btn-principal:hover {
+  background: var(--rosa-fuerte);
+  color: var(--blanco);
   transform: translateY(-3px);
-  box-shadow: 0 14px 36px var(--sombra);
+  box-shadow: 0 8px 20px rgba(232, 127, 166, 0.25);
 }
 
 .btn-secundario {
@@ -259,8 +504,10 @@ nav a.activo {
 }
 
 .btn-secundario:hover {
-  background: var(--rosa-suave);
-  transform: translateY(-2px);
+  background: var(--rosa-fuerte);
+  color: var(--blanco);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(232, 127, 166, 0.25);
 }
 
 .btn-grupo {
@@ -276,7 +523,7 @@ nav a.activo {
    CINTA DECORATIVA (Marquee continuo sin romper bordes)
    ========================================================================== */
 .cinta {
-  background: linear-gradient(90deg, var(--rosa-suave), var(--lila), var(--menta), var(--melocoton), var(--rosa-suave));
+  background: linear-gradient(90deg, var(--rosa-suave), var(--melocoton), var(--menta), var(--lila), var(--rosa-suave));
   background-size: 300% 100%;
   animation: mover-degradado 8s linear infinite;
   padding: 14px 0;
@@ -310,6 +557,7 @@ nav a.activo {
 section {
   padding: 5rem 1.5rem;
   position: relative;
+  z-index: 1;
 }
 
 .contenedor {
@@ -345,8 +593,9 @@ section {
    ========================================================================== */
 .cuenta-bg {
   background:
-    radial-gradient(ellipse at 30% 50%, var(--lila) 0%, transparent 60%),
-    radial-gradient(ellipse at 70% 50%, var(--rosa-suave) 0%, transparent 60%),
+    radial-gradient(ellipse at 25% 50%, rgba(207, 238, 250, 0.9) 0%, transparent 60%),
+    radial-gradient(ellipse at 75% 45%, rgba(217, 245, 233, 0.9) 0%, transparent 60%),
+    radial-gradient(ellipse at 50% 85%, rgba(255, 217, 232, 0.72) 0%, transparent 58%),
     var(--crema);
 }
 
@@ -573,21 +822,23 @@ section {
   max-width: 170px;
   margin-top: 1rem;
   padding: 10px 18px;
-  border: none;
+  border: 2px solid var(--rosa-medio);
   border-radius: 50px;
-  background: linear-gradient(135deg, var(--rosa-fuerte), var(--lila-medio));
-  color: var(--blanco);
+  background: var(--blanco);
+  color: var(--rosa-fuerte);
   font-family: 'Nunito', sans-serif;
   font-size: 0.9rem;
   font-weight: 800;
   cursor: pointer;
-  box-shadow: 0 8px 20px var(--sombra);
+  box-shadow: none;
   transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
 .btn-regalar:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 26px var(--sombra);
+  background: var(--rosa-fuerte);
+  color: var(--blanco);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(232, 127, 166, 0.25);
 }
 
 .regalo-card.regalo-entregado {
@@ -821,7 +1072,9 @@ section {
    FOOTER
    ========================================================================== */
 footer {
-  background: linear-gradient(135deg, var(--rosa-suave) 0%, var(--lila) 50%, var(--menta) 100%);
+  position: relative;
+  z-index: 1;
+  background: linear-gradient(135deg, var(--rosa-suave) 0%, var(--melocoton) 48%, var(--menta) 100%);
   padding: 3.5rem 1.5rem 2rem;
   text-align: center;
 }
@@ -1025,6 +1278,8 @@ footer {
 
 /* Botón flotante para regresar */
 .regresar-contenedor {
+  position: relative;
+  z-index: 1;
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 1.5rem;
@@ -1051,6 +1306,8 @@ footer {
 
 /* Cabecera compacta para la lista */
 .regalos-header {
+  position: relative;
+  z-index: 1;
   padding: 2rem 1.5rem 0;
   text-align: center;
 }
@@ -1084,6 +1341,8 @@ footer {
 
 /* Contenedor de la Grilla Extensa */
 .contenedor-regalos {
+  position: relative;
+  z-index: 1;
   max-width: 1300px; /* Un poco más ancho para que quepan cómodamente 4 o 5 */
   margin: 0 auto;
   padding: 3rem 1.5rem;
