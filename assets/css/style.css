@@ -294,6 +294,19 @@ nav a.activo {
   font-weight: 800;
 }
 
+nav a.nav-finalizado,
+nav a.nav-finalizado:hover,
+nav a.nav-finalizado.activo {
+  color: #969da0;
+  background: #eceff0;
+  font-weight: 700;
+}
+
+nav a.nav-finalizado::after {
+  content: ' · cerrado';
+  font-size: 0.7em;
+}
+
 /* ==========================================================================
    DECORACIONES FLOTANTES (Burbujas)
    ========================================================================== */
@@ -586,6 +599,338 @@ section {
   background: linear-gradient(90deg, var(--rosa-medio), var(--lila-medio));
   border-radius: 4px;
   margin: 1rem auto 0;
+}
+
+/* ==========================================================================
+   GALERÍA DE RECUERDOS
+   ========================================================================== */
+.galeria-seccion {
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 12% 18%, rgba(255, 217, 232, 0.75), transparent 25%),
+    radial-gradient(circle at 88% 72%, rgba(207, 238, 250, 0.9), transparent 29%),
+    rgba(255, 255, 255, 0.5);
+}
+
+.galeria-contenedor {
+  width: min(1180px, 100%);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(240px, 0.72fr) minmax(0, 1.7fr);
+  gap: clamp(2.5rem, 6vw, 6rem);
+  align-items: center;
+}
+
+.galeria-mensaje {
+  position: sticky;
+  top: 7.5rem;
+}
+
+.galeria-etiqueta {
+  display: inline-block;
+  margin-bottom: 1rem;
+  color: var(--rosa-fuerte);
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.galeria-mensaje h2 { margin-bottom: 1.2rem; }
+.galeria-mensaje p { font-size: 1.02rem; }
+
+.galeria-firma {
+  margin-top: 1.5rem;
+  color: var(--rosa-fuerte);
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+}
+
+.galeria-indicacion {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 2.2rem;
+  color: var(--texto-suave);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.galeria-indicacion::before { content: '↗'; font-size: 1rem; }
+
+.btn-subir-foto {
+  display: block;
+  margin-top: 1.2rem;
+  padding: 11px 18px;
+  border: 1.5px solid var(--rosa-medio);
+  border-radius: 999px;
+  color: var(--rosa-fuerte);
+  background: rgba(255, 255, 255, 0.82);
+  font: inherit;
+  font-size: 0.86rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.btn-subir-foto:hover { transform: translateY(-2px); background: var(--rosa-suave); }
+
+.formulario-foto {
+  margin-top: 1.2rem;
+  padding: 1.3rem;
+  border: 1px solid rgba(143, 207, 231, 0.5);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 14px 38px var(--sombra-suave);
+}
+
+.formulario-foto[hidden] { display: none; }
+
+.formulario-foto-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.formulario-foto-cabecera button {
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 50%;
+  color: var(--texto-medio);
+  background: var(--lila);
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.formulario-foto label {
+  display: block;
+  margin: 0.75rem 0 0.3rem;
+  color: var(--texto-oscuro);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.formulario-foto input[type="text"],
+.formulario-foto input[type="password"],
+.formulario-foto input[type="file"] {
+  width: 100%;
+  padding: 0.7rem 0.8rem;
+  border: 1px solid rgba(143, 207, 231, 0.65);
+  border-radius: 12px;
+  color: var(--texto-oscuro);
+  background: white;
+  font: inherit;
+  font-size: 0.8rem;
+}
+
+.sesion-admin {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.7rem;
+  margin-bottom: 0.8rem;
+  padding: 0.55rem 0.7rem;
+  border-radius: 12px;
+  color: #408c6f;
+  background: rgba(217, 245, 233, 0.75);
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.sesion-admin button {
+  border: 0;
+  color: #677b73;
+  background: transparent;
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.formulario-foto small { display: block; margin-top: 0.35rem; color: var(--texto-suave); }
+.formulario-foto .btn { width: 100%; margin-top: 1rem; padding: 10px 14px; }
+.formulario-foto .btn:disabled { opacity: 0.6; cursor: wait; }
+
+.estado-subida { min-height: 1.3rem; margin-top: 0.65rem; font-size: 0.78rem; text-align: center; }
+.estado-subida.exito { color: #408c6f; }
+.estado-subida.error { color: #b85f72; }
+
+.galeria-mosaico {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-auto-rows: 42px;
+  gap: clamp(0.8rem, 2vw, 1.4rem);
+}
+
+.foto-galeria {
+  position: relative;
+  overflow: hidden;
+  padding: 0;
+  border: 7px solid rgba(255, 255, 255, 0.94);
+  border-radius: 25px;
+  background: var(--blanco);
+  box-shadow: 0 18px 45px rgba(84, 145, 164, 0.18);
+  cursor: zoom-in;
+  transform: rotate(var(--giro, 0deg));
+  transition: transform 0.45s cubic-bezier(.2,.8,.2,1), box-shadow 0.35s ease;
+}
+
+.foto-galeria::after {
+  content: '＋';
+  position: absolute;
+  top: 0.9rem;
+  right: 0.9rem;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--texto-oscuro);
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 5px 18px rgba(62, 88, 98, 0.15);
+  opacity: 0;
+  transform: scale(0.7);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.foto-galeria img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  transition: transform 0.65s cubic-bezier(.2,.8,.2,1), filter 0.4s ease;
+}
+
+.foto-galeria span {
+  position: absolute;
+  left: 1rem;
+  bottom: 1rem;
+  padding: 0.45rem 0.8rem;
+  border-radius: 999px;
+  color: var(--texto-oscuro);
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(8px);
+  font-size: 0.76rem;
+  font-weight: 800;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.foto-galeria:hover,
+.foto-galeria:focus-visible {
+  z-index: 2;
+  transform: rotate(0) translateY(-8px) scale(1.025);
+  box-shadow: 0 24px 60px rgba(84, 145, 164, 0.28);
+  outline: none;
+}
+
+.foto-galeria:hover img,
+.foto-galeria:focus-visible img { transform: scale(1.06); filter: saturate(1.05); }
+.foto-galeria:hover::after,
+.foto-galeria:focus-visible::after,
+.foto-galeria:hover span,
+.foto-galeria:focus-visible span { opacity: 1; transform: none; }
+
+.foto-grande { grid-column: 1 / 9; grid-row: 1 / 9; --giro: -1.5deg; }
+.foto-vertical { grid-column: 8 / 13; grid-row: 7 / 16; --giro: 2.2deg; }
+.foto-ancha { grid-column: 1 / 8; grid-row: 10 / 17; --giro: -2deg; }
+.foto-subida { grid-column: span 4; grid-row: span 7; --giro: 0deg; }
+.foto-subida:nth-of-type(even) { --giro: 1.2deg; }
+.foto-subida:nth-of-type(3n) { --giro: -1deg; }
+
+.galeria-cargando {
+  grid-column: 1 / -1;
+  padding: 1rem;
+  color: var(--texto-suave);
+  font-size: 0.82rem;
+  text-align: center;
+}
+
+.galeria-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  display: grid;
+  place-items: center;
+  padding: clamp(1rem, 4vw, 3rem);
+  background: rgba(33, 56, 65, 0.76);
+  backdrop-filter: blur(16px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.galeria-lightbox.visible { opacity: 1; visibility: visible; }
+.lightbox-abierto { overflow: hidden; }
+
+.lightbox-contenido {
+  width: min(100%, 1100px);
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: scale(0.88) translateY(20px);
+  opacity: 0;
+  transition: transform 0.42s cubic-bezier(.2,.8,.2,1), opacity 0.3s ease;
+}
+
+.galeria-lightbox.visible .lightbox-contenido { transform: none; opacity: 1; }
+
+.lightbox-contenido img {
+  max-width: 100%;
+  max-height: calc(88vh - 3rem);
+  object-fit: contain;
+  border: 8px solid white;
+  border-radius: 22px;
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.35);
+}
+
+.lightbox-contenido figcaption {
+  margin-top: 0.8rem;
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.lightbox-cerrar {
+  position: absolute;
+  top: max(1rem, env(safe-area-inset-top));
+  right: max(1rem, env(safe-area-inset-right));
+  z-index: 1;
+  width: 48px;
+  height: 48px;
+  border: 1px solid rgba(255,255,255,0.45);
+  border-radius: 50%;
+  color: white;
+  background: rgba(255,255,255,0.15);
+  font-size: 2rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.lightbox-cerrar:hover,
+.lightbox-cerrar:focus-visible { transform: rotate(8deg) scale(1.08); background: rgba(255,255,255,0.28); outline: 2px solid white; }
+
+@media (max-width: 760px) {
+  .galeria-contenedor { grid-template-columns: 1fr; gap: 2.5rem; }
+  .galeria-mensaje { position: static; text-align: center; }
+  .galeria-indicacion { margin-top: 1.3rem; }
+  .btn-subir-foto { margin-inline: auto; }
+  .formulario-foto { text-align: left; }
+  .galeria-mosaico { grid-auto-rows: 34px; }
+  .foto-grande { grid-column: 1 / 10; grid-row: 1 / 8; }
+  .foto-vertical { grid-column: 7 / 13; grid-row: 7 / 15; }
+  .foto-ancha { grid-column: 1 / 8; grid-row: 9 / 16; }
+  .foto-subida { grid-column: span 6; grid-row: span 7; }
+  .foto-galeria span, .foto-galeria::after { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .foto-galeria, .foto-galeria img, .lightbox-contenido, .galeria-lightbox { transition-duration: 0.01ms; }
 }
 
 /* ==========================================================================
@@ -951,6 +1296,54 @@ section {
   border: 1.5px solid var(--rosa-suave);
   position: relative;
   overflow: hidden;
+}
+
+.rsvp-cerrado {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+  border-radius: inherit;
+  background: rgba(244, 247, 248, 0.88);
+  backdrop-filter: blur(7px) grayscale(0.3);
+}
+
+.rsvp-cerrado-icono {
+  width: 68px;
+  height: 68px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 1rem;
+  border-radius: 50%;
+  color: var(--rosa-fuerte);
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(150, 157, 160, 0.3);
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  box-shadow: 0 10px 30px rgba(62, 88, 98, 0.12);
+}
+
+.rsvp-cerrado h3 {
+  margin-bottom: 0.65rem;
+  color: #687277;
+  font-size: clamp(1.5rem, 4vw, 2rem);
+}
+
+.rsvp-cerrado p {
+  max-width: 430px;
+  color: #7d878b;
+}
+
+.rsvp-card form {
+  filter: grayscale(1);
+  opacity: 0.32;
+  pointer-events: none;
+  user-select: none;
 }
 
 /* Círculos decorativos de fondo en la tarjeta RSVP */

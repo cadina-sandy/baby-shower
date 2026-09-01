@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Baby Shower de Amelia 🌸</title>
-  <link rel="stylesheet" href="./assets/css/style.css?v=marine-7" />
+  <link rel="stylesheet" href="./assets/css/style.css?v=gallery-admin-1" />
 </head>
 <body>
   <div class="decoracion-marina" aria-hidden="true">
@@ -20,7 +20,8 @@
     <a href="#inicio" class="activo">Inicio</a>
     <a href="#detalles">Detalles</a>
     <a href="#regalos">Regalos</a>
-    <a href="#rsvp">Confirmar</a>
+    <a href="#rsvp" class="nav-finalizado" aria-label="Confirmar, evento ya realizado">Confirmar</a>
+    <a href="#galeria">Galería</a>
   </nav>
 
   <!-- ========== HERO ========== -->
@@ -181,8 +182,6 @@
 </section>
 
 
-
-
   <!-- ========== RSVP ========== -->
   <section id="rsvp" class="rsvp-bg">
     <div class="contenedor">
@@ -194,7 +193,13 @@
 
       <div class="rsvp-card animar-entrada">
 
-        <form id="formulario-rsvp" action="https://formspree.io/f/mzdwqldn" method="POST">
+        <div class="rsvp-cerrado" role="status" aria-live="polite">
+          <span class="rsvp-cerrado-icono">♡</span>
+          <h3>Evento ya realizado</h3>
+          <p>Las confirmaciones se encuentran cerradas.<br>¡Gracias por haber sido parte de este día tan especial!</p>
+        </div>
+
+        <form id="formulario-rsvp" action="https://formspree.io/f/mzdwqldn" method="POST" aria-hidden="true" inert>
           <div class="form-grupo">
             <label for="nombre">Tu nombre completo</label>
             <input type="text" id="nombre" name="nombre" placeholder="Ej: María González" required />
@@ -261,6 +266,66 @@
     </div>
   </section>
 
+  <!-- ========== GALERÍA DE RECUERDOS ========== -->
+  <section id="galeria" class="galeria-seccion">
+    <div class="galeria-contenedor">
+      <aside class="galeria-mensaje animar-entrada">
+        <span class="galeria-etiqueta">Nuestros recuerdos</span>
+        <h2>Un día para guardar en el corazón</h2>
+        <p>
+          Gracias por acompañarnos, por cada abrazo, cada sonrisa y todo el cariño
+          que le regalaron a Amelia. Estos pequeños instantes hicieron de la tarde
+          un recuerdo que atesoraremos para siempre.
+        </p>
+        <div class="galeria-firma">Con amor, familia Valenzuela Sereño ♡</div>
+        <span class="galeria-indicacion">Toca una foto para verla de cerca</span>
+
+        <button class="btn-subir-foto" id="mostrar-subida" type="button">🔒 Administrar galería</button>
+
+        <form class="formulario-foto" id="formulario-acceso" hidden>
+          <div class="formulario-foto-cabecera">
+            <strong>Acceso de administrador</strong>
+            <button type="button" id="cerrar-acceso" aria-label="Cerrar acceso">×</button>
+          </div>
+          <label for="clave-galeria">Contraseña</label>
+          <input id="clave-galeria" name="password" type="password" autocomplete="current-password" placeholder="Escribe la contraseña" required />
+          <button class="btn btn-principal" type="submit">Entrar</button>
+          <p class="estado-subida" id="estado-acceso" role="status" aria-live="polite"></p>
+        </form>
+
+        <form class="formulario-foto" id="formulario-foto" hidden>
+          <div class="formulario-foto-cabecera">
+            <strong>Agregar un recuerdo</strong>
+            <button type="button" id="cerrar-subida" aria-label="Cerrar formulario">×</button>
+          </div>
+          <div class="sesion-admin">
+            <span>Sesión de administrador activa</span>
+            <button type="button" id="cerrar-sesion">Salir</button>
+          </div>
+          <label for="titulo-foto">Título de la foto</label>
+          <input id="titulo-foto" name="titulo" type="text" maxlength="60" placeholder="Ej: Una tarde llena de amor" required />
+          <label for="archivo-foto">Selecciona una imagen</label>
+          <input id="archivo-foto" name="foto" type="file" accept="image/jpeg,image/png,image/webp" required />
+          <small>JPG, PNG o WebP · máximo 8 MB</small>
+          <button class="btn btn-principal" type="submit">Subir a la galería</button>
+          <p class="estado-subida" id="estado-subida" role="status" aria-live="polite"></p>
+        </form>
+      </aside>
+
+      <div class="galeria-mosaico" aria-label="Galería de fotos del baby shower">
+        <div class="galeria-cargando" id="galeria-cargando">Buscando nuevos recuerdos…</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="galeria-lightbox" id="galeria-lightbox" role="dialog" aria-modal="true" aria-hidden="true" aria-label="Foto ampliada">
+    <button class="lightbox-cerrar" type="button" aria-label="Cerrar foto">×</button>
+    <figure class="lightbox-contenido">
+      <img id="lightbox-imagen" src="" alt="" />
+      <figcaption id="lightbox-pie"></figcaption>
+    </figure>
+  </div>
+
   <!-- ========== FOOTER ========== -->
   <footer>
     <div class="footer-corazones">🐠 🐚 🐢</div>
@@ -310,6 +375,247 @@
     }, { threshold: 0.12 });
 
     document.querySelectorAll('.animar-entrada').forEach(el => observador.observe(el));
+
+    /* ---------- Galería ampliable ---------- */
+    const lightbox = document.getElementById('galeria-lightbox');
+    const lightboxImagen = document.getElementById('lightbox-imagen');
+    const lightboxPie = document.getElementById('lightbox-pie');
+    const cerrarLightbox = lightbox.querySelector('.lightbox-cerrar');
+    let fotoActiva = null;
+
+    function abrirFoto(boton) {
+      fotoActiva = boton;
+      lightboxImagen.src = boton.dataset.src;
+      lightboxImagen.alt = boton.dataset.alt;
+      lightboxPie.textContent = boton.querySelector('span').textContent;
+      lightbox.classList.add('visible');
+      lightbox.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('lightbox-abierto');
+      cerrarLightbox.focus();
+    }
+
+    function cerrarFoto() {
+      lightbox.classList.remove('visible');
+      lightbox.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('lightbox-abierto');
+      lightboxImagen.src = '';
+      if (fotoActiva) fotoActiva.focus();
+    }
+
+    document.querySelectorAll('.foto-galeria').forEach(boton => {
+      boton.addEventListener('click', () => abrirFoto(boton));
+    });
+
+    /* ---------- Fotos compartidas con Supabase ---------- */
+    const SUPABASE_URL = 'https://fvmdyoqnfvqrsy' + 'aonhjn.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_cKtqvy7JylXYNDolot51yw_mF1AvQZE';
+    const ADMIN_EMAIL = 'cadin.a.sandy@gmail.com';
+    const formularioFoto = document.getElementById('formulario-foto');
+    const formularioAcceso = document.getElementById('formulario-acceso');
+    const mostrarSubida = document.getElementById('mostrar-subida');
+    const cerrarSubida = document.getElementById('cerrar-subida');
+    const cerrarAcceso = document.getElementById('cerrar-acceso');
+    const cerrarSesion = document.getElementById('cerrar-sesion');
+    const estadoAcceso = document.getElementById('estado-acceso');
+    const estadoSubida = document.getElementById('estado-subida');
+    const galeriaMosaico = document.querySelector('.galeria-mosaico');
+    const galeriaCargando = document.getElementById('galeria-cargando');
+    let intentosAcceso = 0;
+    let adminToken = '';
+
+    const cabecerasSupabase = { apikey: SUPABASE_KEY };
+
+    function tokenAdmin() {
+      return adminToken;
+    }
+
+    function cabecerasAdmin() {
+      return { apikey: SUPABASE_KEY, Authorization: `Bearer ${tokenAdmin()}` };
+    }
+
+    function urlPublicaFoto(ruta) {
+      return `${SUPABASE_URL}/storage/v1/object/public/gallery/${ruta.split('/').map(encodeURIComponent).join('/')}`;
+    }
+
+    function conectarFoto(boton) {
+      boton.addEventListener('click', () => abrirFoto(boton));
+    }
+
+    function agregarFotoGaleria(foto) {
+      const boton = document.createElement('button');
+      boton.className = 'foto-galeria foto-subida';
+      boton.type = 'button';
+      boton.dataset.src = urlPublicaFoto(foto.storage_path);
+      boton.dataset.alt = foto.title;
+
+      const imagen = document.createElement('img');
+      imagen.src = boton.dataset.src;
+      imagen.alt = foto.title;
+      imagen.loading = 'lazy';
+
+      const titulo = document.createElement('span');
+      titulo.textContent = foto.title;
+      boton.append(imagen, titulo);
+      conectarFoto(boton);
+      galeriaMosaico.appendChild(boton);
+    }
+
+    async function cargarFotosCompartidas() {
+      try {
+        const respuesta = await fetch(
+          `${SUPABASE_URL}/rest/v1/gallery_photos?select=id,title,storage_path,created_at&order=created_at.desc`,
+          { headers: cabecerasSupabase }
+        );
+        if (!respuesta.ok) throw new Error('La galería todavía no está configurada');
+        const fotos = await respuesta.json();
+        fotos.forEach(agregarFotoGaleria);
+        galeriaCargando.remove();
+      } catch (error) {
+        galeriaCargando.textContent = 'La galería compartida estará disponible muy pronto.';
+      }
+    }
+
+    mostrarSubida.addEventListener('click', () => {
+      mostrarSubida.hidden = true;
+      if (tokenAdmin()) {
+        formularioFoto.hidden = false;
+        document.getElementById('titulo-foto').focus();
+      } else {
+        intentosAcceso = 0;
+        formularioAcceso.hidden = false;
+        document.getElementById('clave-galeria').focus();
+      }
+    });
+
+    cerrarAcceso.addEventListener('click', () => {
+      formularioAcceso.hidden = true;
+      mostrarSubida.hidden = false;
+      formularioAcceso.reset();
+      estadoAcceso.textContent = '';
+      intentosAcceso = 0;
+    });
+
+    formularioAcceso.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const password = formularioAcceso.elements.password.value;
+      const boton = formularioAcceso.querySelector('button[type="submit"]');
+      boton.disabled = true;
+      boton.textContent = 'Comprobando…';
+      estadoAcceso.textContent = '';
+
+      try {
+        const respuesta = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+          method: 'POST',
+          headers: { apikey: SUPABASE_KEY, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: ADMIN_EMAIL, password })
+        });
+        if (!respuesta.ok) throw new Error('Contraseña incorrecta');
+        const sesion = await respuesta.json();
+        intentosAcceso = 0;
+        adminToken = sesion.access_token;
+        formularioAcceso.reset();
+        formularioAcceso.hidden = true;
+        formularioFoto.hidden = false;
+        document.getElementById('titulo-foto').focus();
+      } catch (error) {
+        intentosAcceso += 1;
+        estadoAcceso.className = 'estado-subida error';
+        if (intentosAcceso < 2) {
+          estadoAcceso.textContent = 'Contraseña incorrecta. Te queda 1 intento.';
+          formularioAcceso.elements.password.select();
+        } else {
+          estadoAcceso.textContent = 'Acceso cancelado: se agotaron los 2 intentos.';
+          setTimeout(() => {
+            formularioAcceso.hidden = true;
+            formularioAcceso.reset();
+            mostrarSubida.hidden = false;
+            estadoAcceso.textContent = '';
+            intentosAcceso = 0;
+            boton.disabled = false;
+          }, 1600);
+        }
+      } finally {
+        boton.disabled = intentosAcceso >= 2;
+        boton.textContent = 'Entrar';
+      }
+    });
+
+    cerrarSubida.addEventListener('click', () => {
+      adminToken = '';
+      formularioFoto.hidden = true;
+      mostrarSubida.hidden = false;
+      estadoSubida.textContent = '';
+    });
+
+    cerrarSesion.addEventListener('click', () => {
+      adminToken = '';
+      formularioFoto.hidden = true;
+      formularioFoto.reset();
+      mostrarSubida.hidden = false;
+      estadoSubida.textContent = '';
+    });
+
+    formularioFoto.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const titulo = formularioFoto.elements.titulo.value.trim();
+      const archivo = formularioFoto.elements.foto.files[0];
+      const boton = formularioFoto.querySelector('button[type="submit"]');
+      const tiposPermitidos = ['image/jpeg', 'image/png', 'image/webp'];
+
+      if (!archivo || !tiposPermitidos.includes(archivo.type) || archivo.size > 8 * 1024 * 1024) {
+        estadoSubida.textContent = 'Elige una imagen JPG, PNG o WebP de hasta 8 MB.';
+        estadoSubida.className = 'estado-subida error';
+        return;
+      }
+
+      const extension = archivo.name.split('.').pop().toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg';
+      const ruta = `${Date.now()}-${crypto.randomUUID()}.${extension}`;
+      boton.disabled = true;
+      boton.textContent = 'Subiendo…';
+      estadoSubida.textContent = 'Guardando tu recuerdo 💕';
+      estadoSubida.className = 'estado-subida';
+
+      try {
+        const subida = await fetch(`${SUPABASE_URL}/storage/v1/object/gallery/${ruta}`, {
+          method: 'POST',
+          headers: { ...cabecerasAdmin(), 'Content-Type': archivo.type, 'x-upsert': 'false' },
+          body: archivo
+        });
+        if (!subida.ok) throw new Error('No se pudo subir la imagen');
+
+        const registro = await fetch(`${SUPABASE_URL}/rest/v1/gallery_photos`, {
+          method: 'POST',
+          headers: {
+            ...cabecerasAdmin(),
+            'Content-Type': 'application/json',
+            Prefer: 'return=representation'
+          },
+          body: JSON.stringify({ title: titulo, storage_path: ruta })
+        });
+        if (!registro.ok) throw new Error('No se pudo guardar el título');
+        const [foto] = await registro.json();
+        agregarFotoGaleria(foto);
+        formularioFoto.reset();
+        estadoSubida.textContent = '¡Tu foto ya está en la galería! ♡';
+        estadoSubida.className = 'estado-subida exito';
+      } catch (error) {
+        estadoSubida.textContent = 'No pudimos subirla. Intenta nuevamente en un momento.';
+        estadoSubida.className = 'estado-subida error';
+      } finally {
+        boton.disabled = false;
+        boton.textContent = 'Subir a la galería';
+      }
+    });
+
+    cargarFotosCompartidas();
+
+    cerrarLightbox.addEventListener('click', cerrarFoto);
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox) cerrarFoto();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && lightbox.classList.contains('visible')) cerrarFoto();
+    });
 
     /* ---------- Navegación activa ---------- */
     const secciones = document.querySelectorAll('section[id]');
