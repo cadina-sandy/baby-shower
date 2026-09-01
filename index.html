@@ -313,7 +313,7 @@
           </div>
           <label for="archivo-foto">Selecciona una o varias imágenes</label>
           <input id="archivo-foto" name="foto" type="file" accept="image/jpeg,image/png,image/webp" multiple required />
-          <small>Hasta 10 fotos · JPG, PNG o WebP · máximo 8 MB cada una</small>
+          <small>Hasta 10 fotos · JPG, PNG o WebP · las imágenes grandes se optimizan automáticamente</small>
           <div class="titulos-fotos" id="titulos-fotos"></div>
           <button class="btn btn-principal" type="submit">Subir fotos a la galería</button>
           <p class="estado-subida" id="estado-subida" role="status" aria-live="polite"></p>
@@ -449,6 +449,35 @@
 
     function conectarFoto(boton) {
       boton.addEventListener('click', () => abrirFoto(boton));
+    }
+
+    async function optimizarFoto(archivo) {
+      if (archivo.size <= 7.5 * 1024 * 1024) return archivo;
+
+      const bitmap = await createImageBitmap(archivo);
+      const limite = 2200;
+      const escala = Math.min(1, limite / Math.max(bitmap.width, bitmap.height));
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.round(bitmap.width * escala);
+      canvas.height = Math.round(bitmap.height * escala);
+      canvas.getContext('2d').drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+      bitmap.close();
+
+      const blob = await new Promise((resolve, reject) => {
+        canvas.toBlob(resultado => resultado ? resolve(resultado) : reject(new Error('No se pudo reducir la imagen')), 'image/jpeg', 0.84);
+      });
+      return new File([blob], archivo.name.replace(/\.[^.]+$/, '') + '.jpg', { type: 'image/jpeg' });
+    }
+
+    async function detalleError(respuesta, etapa) {
+      let detalle = '';
+      try {
+        const cuerpo = await respuesta.json();
+        detalle = cuerpo.message || cuerpo.error || cuerpo.msg || '';
+      } catch (error) {
+        detalle = await respuesta.text().catch(() => '');
+      }
+      throw new Error(`${etapa} (${respuesta.status})${detalle ? ': ' + detalle : ''}`);
     }
 
     function agregarFotoGaleria(foto) {
@@ -606,8 +635,8 @@
       const boton = formularioFoto.querySelector('button[type="submit"]');
       const tiposPermitidos = ['image/jpeg', 'image/png', 'image/webp'];
 
-      if (!archivos.length || archivos.length > 10 || archivos.some(archivo => !tiposPermitidos.includes(archivo.type) || archivo.size > 8 * 1024 * 1024)) {
-        estadoSubida.textContent = 'Elige entre 1 y 10 imágenes JPG, PNG o WebP de hasta 8 MB cada una.';
+      if (!archivos.length || archivos.length > 10 || archivos.some(archivo => !tiposPermitidos.includes(archivo.type))) {
+        estadoSubida.textContent = 'Elige entre 1 y 10 imágenes en formato JPG, PNG o WebP.';
         estadoSubida.className = 'estado-subida error';
         return;
       }
@@ -617,9 +646,18 @@
       estadoSubida.className = 'estado-subida';
       let subidas = 0;
       let errores = 0;
+      const detallesError = [];
 
       for (let indice = 0; indice < archivos.length; indice += 1) {
-        const archivo = archivos[indice];
+        const archivoOriginal = archivos[indice];
+        let archivo;
+        try {
+          archivo = await optimizarFoto(archivoOriginal);
+        } catch (error) {
+          errores += 1;
+          detallesError.push(`${archivoOriginal.name}: no se pudo procesar`);
+          continue;
+        }
         const extension = archivo.name.split('.').pop().toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg';
         const ruta = `${Date.now()}-${crypto.randomUUID()}.${extension}`;
         estadoSubida.textContent = `Subiendo ${indice + 1} de ${archivos.length}…`;
@@ -630,29 +668,30 @@
             headers: { ...cabecerasAdmin(), 'Content-Type': archivo.type, 'x-upsert': 'false' },
             body: archivo
           });
-          if (!subida.ok) throw new Error('No se pudo subir la imagen');
+          if (!subida.ok) await detalleError(subida, 'almacenamiento');
 
           const registro = await fetch(`${SUPABASE_URL}/rest/v1/gallery_photos`, {
             method: 'POST',
             headers: { ...cabecerasAdmin(), 'Content-Type': 'application/json', Prefer: 'return=representation' },
             body: JSON.stringify({ title: titulos[indice], storage_path: ruta })
           });
-          if (!registro.ok) throw new Error('No se pudo guardar el título');
+          if (!registro.ok) await detalleError(registro, 'título');
           const [foto] = await registro.json();
           agregarFotoGaleria(foto);
           subidas += 1;
         } catch (error) {
           errores += 1;
+          detallesError.push(`${archivoOriginal.name}: ${error.message}`);
         }
       }
 
       if (subidas > 0) {
         formularioFoto.reset();
         titulosFotos.replaceChildren();
-        estadoSubida.textContent = errores ? `${subidas} fotos subidas y ${errores} no pudieron guardarse.` : `¡${subidas} foto${subidas === 1 ? '' : 's'} subida${subidas === 1 ? '' : 's'} a la galería! ♡`;
+        estadoSubida.textContent = errores ? `${subidas} fotos subidas. Error: ${detallesError.join(' · ')}` : `¡${subidas} foto${subidas === 1 ? '' : 's'} subida${subidas === 1 ? '' : 's'} a la galería! ♡`;
         estadoSubida.className = 'estado-subida exito';
       } else {
-        estadoSubida.textContent = 'No pudimos subir las fotos. Intenta nuevamente en un momento.';
+        estadoSubida.textContent = `No pudimos subir: ${detallesError.join(' · ')}`;
         estadoSubida.className = 'estado-subida error';
       }
 
