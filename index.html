@@ -452,8 +452,6 @@
     }
 
     async function optimizarFoto(archivo) {
-      if (archivo.size <= 7.5 * 1024 * 1024) return archivo;
-
       const bitmap = await createImageBitmap(archivo);
       const limite = 2200;
       const escala = Math.min(1, limite / Math.max(bitmap.width, bitmap.height));
@@ -467,6 +465,21 @@
         canvas.toBlob(resultado => resultado ? resolve(resultado) : reject(new Error('No se pudo reducir la imagen')), 'image/jpeg', 0.84);
       });
       return new File([blob], archivo.name.replace(/\.[^.]+$/, '') + '.jpg', { type: 'image/jpeg' });
+    }
+
+    async function enviarConReintento(url, opciones, intentos = 2) {
+      let ultimoError;
+      for (let intento = 1; intento <= intentos; intento += 1) {
+        try {
+          return await fetch(url, opciones);
+        } catch (error) {
+          ultimoError = error;
+          if (intento < intentos) {
+            await new Promise(resolve => setTimeout(resolve, 900));
+          }
+        }
+      }
+      throw ultimoError;
     }
 
     async function detalleError(respuesta, etapa) {
@@ -663,7 +676,7 @@
         estadoSubida.textContent = `Subiendo ${indice + 1} de ${archivos.length}…`;
 
         try {
-          const subida = await fetch(`${SUPABASE_URL}/storage/v1/object/gallery/${ruta}`, {
+          const subida = await enviarConReintento(`${SUPABASE_URL}/storage/v1/object/gallery/${ruta}`, {
             method: 'POST',
             headers: { ...cabecerasAdmin(), 'Content-Type': archivo.type, 'x-upsert': 'false' },
             body: archivo
