@@ -819,6 +819,30 @@ section {
   font-size: 0.78rem;
 }
 
+.selector-emojis {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-top: 0.45rem;
+}
+
+.selector-emojis button {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 1px solid rgba(246, 174, 202, 0.45);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.88);
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.selector-emojis button:hover {
+  transform: scale(1.12);
+  background: var(--rosa-suave);
+}
+
 .formulario-foto small { display: block; margin-top: 0.35rem; color: var(--texto-suave); }
 .formulario-foto .btn { width: 100%; margin-top: 1rem; padding: 10px 14px; }
 .formulario-foto .btn:disabled { opacity: 0.6; cursor: wait; }

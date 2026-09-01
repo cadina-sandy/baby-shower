@@ -452,14 +452,42 @@
     }
 
     async function optimizarFoto(archivo) {
-      const bitmap = await createImageBitmap(archivo);
+      let imagen;
+      let liberarImagen = () => {};
+
+      try {
+        if (typeof createImageBitmap === 'function') {
+          imagen = await createImageBitmap(archivo);
+          liberarImagen = () => imagen.close?.();
+        } else {
+          throw new Error('Método no disponible');
+        }
+      } catch (error) {
+        const urlTemporal = URL.createObjectURL(archivo);
+        try {
+          imagen = await new Promise((resolve, reject) => {
+            const elemento = new Image();
+            elemento.onload = () => resolve(elemento);
+            elemento.onerror = () => reject(new Error('Formato no compatible'));
+            elemento.src = urlTemporal;
+          });
+          liberarImagen = () => URL.revokeObjectURL(urlTemporal);
+        } catch (errorAlternativo) {
+          URL.revokeObjectURL(urlTemporal);
+          if (archivo.size <= 7.5 * 1024 * 1024) return archivo;
+          throw errorAlternativo;
+        }
+      }
+
+      const anchoOriginal = imagen.naturalWidth || imagen.width;
+      const altoOriginal = imagen.naturalHeight || imagen.height;
       const limite = 2200;
-      const escala = Math.min(1, limite / Math.max(bitmap.width, bitmap.height));
+      const escala = Math.min(1, limite / Math.max(anchoOriginal, altoOriginal));
       const canvas = document.createElement('canvas');
-      canvas.width = Math.round(bitmap.width * escala);
-      canvas.height = Math.round(bitmap.height * escala);
-      canvas.getContext('2d').drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-      bitmap.close();
+      canvas.width = Math.round(anchoOriginal * escala);
+      canvas.height = Math.round(altoOriginal * escala);
+      canvas.getContext('2d').drawImage(imagen, 0, 0, canvas.width, canvas.height);
+      liberarImagen();
 
       const blob = await new Promise((resolve, reject) => {
         canvas.toBlob(resultado => resultado ? resolve(resultado) : reject(new Error('No se pudo reducir la imagen')), 'image/jpeg', 0.84);
@@ -628,7 +656,22 @@
         input.required = true;
         input.placeholder = 'Escribe un título';
         input.value = archivo.name.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ').slice(0, 60);
-        grupo.append(etiqueta, input);
+
+        const emojis = document.createElement('div');
+        emojis.className = 'selector-emojis';
+        ['💕', '🌸', '✨', '🥰', '🎀', '🐚', '🎉'].forEach(emoji => {
+          const botonEmoji = document.createElement('button');
+          botonEmoji.type = 'button';
+          botonEmoji.textContent = emoji;
+          botonEmoji.setAttribute('aria-label', `Agregar ${emoji} al título`);
+          botonEmoji.addEventListener('click', () => {
+            if (input.value.length <= 57) input.value += ` ${emoji}`;
+            input.focus();
+          });
+          emojis.appendChild(botonEmoji);
+        });
+
+        grupo.append(etiqueta, input, emojis);
         titulosFotos.appendChild(grupo);
       });
 
