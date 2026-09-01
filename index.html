@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Baby Shower de Amelia 🌸</title>
-  <link rel="stylesheet" href="./assets/css/style.css?v=gallery-highlight-1" />
+  <link rel="stylesheet" href="./assets/css/style.css?v=gallery-multiple-1" />
 </head>
 <body>
   <div class="decoracion-marina" aria-hidden="true">
@@ -311,12 +311,11 @@
             <span>Sesión de administrador activa</span>
             <button type="button" id="cerrar-sesion">Salir</button>
           </div>
-          <label for="titulo-foto">Título de la foto</label>
-          <input id="titulo-foto" name="titulo" type="text" maxlength="60" placeholder="Ej: Una tarde llena de amor" required />
-          <label for="archivo-foto">Selecciona una imagen</label>
-          <input id="archivo-foto" name="foto" type="file" accept="image/jpeg,image/png,image/webp" required />
-          <small>JPG, PNG o WebP · máximo 8 MB</small>
-          <button class="btn btn-principal" type="submit">Subir a la galería</button>
+          <label for="archivo-foto">Selecciona una o varias imágenes</label>
+          <input id="archivo-foto" name="foto" type="file" accept="image/jpeg,image/png,image/webp" multiple required />
+          <small>Hasta 10 fotos · JPG, PNG o WebP · máximo 8 MB cada una</small>
+          <div class="titulos-fotos" id="titulos-fotos"></div>
+          <button class="btn btn-principal" type="submit">Subir fotos a la galería</button>
           <p class="estado-subida" id="estado-subida" role="status" aria-live="polite"></p>
         </form>
       </aside>
@@ -429,6 +428,8 @@
     const estadoSubida = document.getElementById('estado-subida');
     const galeriaMosaico = document.querySelector('.galeria-mosaico');
     const galeriaCargando = document.getElementById('galeria-cargando');
+    const archivoFoto = document.getElementById('archivo-foto');
+    const titulosFotos = document.getElementById('titulos-fotos');
     let intentosAcceso = 0;
     let adminToken = '';
 
@@ -488,7 +489,7 @@
       mostrarSubida.hidden = true;
       if (tokenAdmin()) {
         formularioFoto.hidden = false;
-        document.getElementById('titulo-foto').focus();
+        archivoFoto.focus();
       } else {
         intentosAcceso = 0;
         formularioAcceso.hidden = false;
@@ -525,7 +526,7 @@
         formularioAcceso.reset();
         formularioAcceso.hidden = true;
         formularioFoto.hidden = false;
-        document.getElementById('titulo-foto').focus();
+        archivoFoto.focus();
       } catch (error) {
         intentosAcceso += 1;
         estadoAcceso.className = 'estado-subida error';
@@ -552,6 +553,8 @@
     cerrarSubida.addEventListener('click', () => {
       adminToken = '';
       formularioFoto.hidden = true;
+      formularioFoto.reset();
+      titulosFotos.replaceChildren();
       mostrarSubida.hidden = false;
       estadoSubida.textContent = '';
     });
@@ -562,58 +565,99 @@
       formularioFoto.reset();
       mostrarSubida.hidden = false;
       estadoSubida.textContent = '';
+      titulosFotos.replaceChildren();
+    });
+
+    archivoFoto.addEventListener('change', () => {
+      titulosFotos.replaceChildren();
+      const archivos = Array.from(archivoFoto.files).slice(0, 10);
+
+      archivos.forEach((archivo, indice) => {
+        const grupo = document.createElement('div');
+        grupo.className = 'titulo-foto-item';
+        const etiqueta = document.createElement('label');
+        etiqueta.htmlFor = `titulo-foto-${indice}`;
+        etiqueta.textContent = `Título para ${archivo.name}`;
+        const input = document.createElement('input');
+        input.id = `titulo-foto-${indice}`;
+        input.className = 'titulo-individual';
+        input.type = 'text';
+        input.maxLength = 60;
+        input.required = true;
+        input.placeholder = 'Escribe un título';
+        input.value = archivo.name.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ').slice(0, 60);
+        grupo.append(etiqueta, input);
+        titulosFotos.appendChild(grupo);
+      });
+
+      if (archivoFoto.files.length > 10) {
+        estadoSubida.textContent = 'Puedes subir un máximo de 10 fotos por vez.';
+        estadoSubida.className = 'estado-subida error';
+      } else {
+        estadoSubida.textContent = `${archivos.length} foto${archivos.length === 1 ? '' : 's'} seleccionada${archivos.length === 1 ? '' : 's'}.`;
+        estadoSubida.className = 'estado-subida';
+      }
     });
 
     formularioFoto.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const titulo = formularioFoto.elements.titulo.value.trim();
-      const archivo = formularioFoto.elements.foto.files[0];
+      const archivos = Array.from(formularioFoto.elements.foto.files);
+      const titulos = Array.from(formularioFoto.querySelectorAll('.titulo-individual')).map(input => input.value.trim());
       const boton = formularioFoto.querySelector('button[type="submit"]');
       const tiposPermitidos = ['image/jpeg', 'image/png', 'image/webp'];
 
-      if (!archivo || !tiposPermitidos.includes(archivo.type) || archivo.size > 8 * 1024 * 1024) {
-        estadoSubida.textContent = 'Elige una imagen JPG, PNG o WebP de hasta 8 MB.';
+      if (!archivos.length || archivos.length > 10 || archivos.some(archivo => !tiposPermitidos.includes(archivo.type) || archivo.size > 8 * 1024 * 1024)) {
+        estadoSubida.textContent = 'Elige entre 1 y 10 imágenes JPG, PNG o WebP de hasta 8 MB cada una.';
         estadoSubida.className = 'estado-subida error';
         return;
       }
 
-      const extension = archivo.name.split('.').pop().toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg';
-      const ruta = `${Date.now()}-${crypto.randomUUID()}.${extension}`;
       boton.disabled = true;
       boton.textContent = 'Subiendo…';
-      estadoSubida.textContent = 'Guardando tu recuerdo 💕';
       estadoSubida.className = 'estado-subida';
+      let subidas = 0;
+      let errores = 0;
 
-      try {
-        const subida = await fetch(`${SUPABASE_URL}/storage/v1/object/gallery/${ruta}`, {
-          method: 'POST',
-          headers: { ...cabecerasAdmin(), 'Content-Type': archivo.type, 'x-upsert': 'false' },
-          body: archivo
-        });
-        if (!subida.ok) throw new Error('No se pudo subir la imagen');
+      for (let indice = 0; indice < archivos.length; indice += 1) {
+        const archivo = archivos[indice];
+        const extension = archivo.name.split('.').pop().toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg';
+        const ruta = `${Date.now()}-${crypto.randomUUID()}.${extension}`;
+        estadoSubida.textContent = `Subiendo ${indice + 1} de ${archivos.length}…`;
 
-        const registro = await fetch(`${SUPABASE_URL}/rest/v1/gallery_photos`, {
-          method: 'POST',
-          headers: {
-            ...cabecerasAdmin(),
-            'Content-Type': 'application/json',
-            Prefer: 'return=representation'
-          },
-          body: JSON.stringify({ title: titulo, storage_path: ruta })
-        });
-        if (!registro.ok) throw new Error('No se pudo guardar el título');
-        const [foto] = await registro.json();
-        agregarFotoGaleria(foto);
-        formularioFoto.reset();
-        estadoSubida.textContent = '¡Tu foto ya está en la galería! ♡';
-        estadoSubida.className = 'estado-subida exito';
-      } catch (error) {
-        estadoSubida.textContent = 'No pudimos subirla. Intenta nuevamente en un momento.';
-        estadoSubida.className = 'estado-subida error';
-      } finally {
-        boton.disabled = false;
-        boton.textContent = 'Subir a la galería';
+        try {
+          const subida = await fetch(`${SUPABASE_URL}/storage/v1/object/gallery/${ruta}`, {
+            method: 'POST',
+            headers: { ...cabecerasAdmin(), 'Content-Type': archivo.type, 'x-upsert': 'false' },
+            body: archivo
+          });
+          if (!subida.ok) throw new Error('No se pudo subir la imagen');
+
+          const registro = await fetch(`${SUPABASE_URL}/rest/v1/gallery_photos`, {
+            method: 'POST',
+            headers: { ...cabecerasAdmin(), 'Content-Type': 'application/json', Prefer: 'return=representation' },
+            body: JSON.stringify({ title: titulos[indice], storage_path: ruta })
+          });
+          if (!registro.ok) throw new Error('No se pudo guardar el título');
+          const [foto] = await registro.json();
+          agregarFotoGaleria(foto);
+          subidas += 1;
+        } catch (error) {
+          errores += 1;
+        }
       }
+
+      if (subidas > 0) {
+        formularioFoto.reset();
+        titulosFotos.replaceChildren();
+        estadoSubida.textContent = errores ? `${subidas} fotos subidas y ${errores} no pudieron guardarse.` : `¡${subidas} foto${subidas === 1 ? '' : 's'} subida${subidas === 1 ? '' : 's'} a la galería! ♡`;
+        estadoSubida.className = 'estado-subida exito';
+      } else {
+        estadoSubida.textContent = 'No pudimos subir las fotos. Intenta nuevamente en un momento.';
+        estadoSubida.className = 'estado-subida error';
+      }
+
+      boton.disabled = false;
+      boton.textContent = 'Subir fotos a la galería';
     });
 
     cargarFotosCompartidas();
