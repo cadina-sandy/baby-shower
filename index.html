@@ -507,6 +507,47 @@
           }
         }
       }
+      throw new Error('problema de conexión con Supabase');
+    }
+
+    function subirArchivoXHR(url, archivo, headers, alProgresar) {
+      return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', url);
+        xhr.timeout = 120000;
+        Object.entries(headers).forEach(([nombre, valor]) => xhr.setRequestHeader(nombre, valor));
+        xhr.upload.addEventListener('progress', evento => {
+          if (evento.lengthComputable) alProgresar(Math.round((evento.loaded / evento.total) * 100));
+        });
+        xhr.addEventListener('load', () => {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            resolve();
+          } else {
+            let mensaje = xhr.responseText;
+            try {
+              const detalle = JSON.parse(xhr.responseText);
+              mensaje = detalle.message || detalle.error || mensaje;
+            } catch (error) {}
+            reject(new Error(`almacenamiento (${xhr.status})${mensaje ? ': ' + mensaje : ''}`));
+          }
+        });
+        xhr.addEventListener('error', () => reject(new Error('se cortó la conexión al enviar la foto')));
+        xhr.addEventListener('timeout', () => reject(new Error('la subida tardó demasiado')));
+        xhr.send(archivo);
+      });
+    }
+
+    async function subirArchivoConReintento(url, archivo, headers, alProgresar) {
+      let ultimoError;
+      for (let intento = 1; intento <= 2; intento += 1) {
+        try {
+          await subirArchivoXHR(url, archivo, headers, alProgresar);
+          return;
+        } catch (error) {
+          ultimoError = error;
+          if (intento < 2) await new Promise(resolve => setTimeout(resolve, 1200));
+        }
+      }
       throw ultimoError;
     }
 
@@ -719,14 +760,14 @@
         estadoSubida.textContent = `Subiendo ${indice + 1} de ${archivos.length}…`;
 
         try {
-          const subida = await enviarConReintento(`${SUPABASE_URL}/storage/v1/object/gallery/${ruta}`, {
-            method: 'POST',
-            headers: { ...cabecerasAdmin(), 'Content-Type': archivo.type, 'x-upsert': 'false' },
-            body: archivo
-          });
-          if (!subida.ok) await detalleError(subida, 'almacenamiento');
+          await subirArchivoConReintento(
+            `${SUPABASE_URL}/storage/v1/object/gallery/${ruta}`,
+            archivo,
+            { ...cabecerasAdmin(), 'Content-Type': archivo.type, 'x-upsert': 'false' },
+            porcentaje => { estadoSubida.textContent = `Subiendo ${indice + 1} de ${archivos.length} · ${porcentaje}%`; }
+          );
 
-          const registro = await fetch(`${SUPABASE_URL}/rest/v1/gallery_photos`, {
+          const registro = await enviarConReintento(`${SUPABASE_URL}/rest/v1/gallery_photos`, {
             method: 'POST',
             headers: { ...cabecerasAdmin(), 'Content-Type': 'application/json', Prefer: 'return=representation' },
             body: JSON.stringify({ title: titulos[indice], storage_path: ruta })
@@ -735,6 +776,7 @@
           const [foto] = await registro.json();
           agregarFotoGaleria(foto);
           subidas += 1;
+          if (indice < archivos.length - 1) await new Promise(resolve => setTimeout(resolve, 500));
         } catch (error) {
           errores += 1;
           detallesError.push(`${archivoOriginal.name}: ${error.message}`);
