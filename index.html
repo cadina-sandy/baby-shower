@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Baby Shower de Amelia 🌸</title>
-  <link rel="stylesheet" href="./assets/css/style.css?v=gallery-admin-1" />
+  <link rel="stylesheet" href="./assets/css/style.css?v=gallery-highlight-1" />
 </head>
 <body>
   <div class="decoracion-marina" aria-hidden="true">
@@ -16,13 +16,15 @@
   </div>
 
   <!-- ========== NAVEGACIÓN ========== -->
-  <nav>
-    <a href="#inicio" class="activo">Inicio</a>
-    <a href="#detalles">Detalles</a>
-    <a href="#regalos">Regalos</a>
-    <a href="#rsvp" class="nav-finalizado" aria-label="Confirmar, evento ya realizado">Confirmar</a>
-    <a href="#galeria">Galería</a>
-  </nav>
+  <div class="navegacion-superior">
+    <nav>
+      <a href="#inicio" class="activo">Inicio</a>
+      <a href="#detalles">Detalles</a>
+      <a href="#regalos">Regalos</a>
+      <a href="#rsvp" class="nav-finalizado" aria-label="Confirmar, evento ya realizado">Confirmar</a>
+    </nav>
+    <a href="#galeria" class="galeria-flotante">Ver galería de fotos</a>
+  </div>
 
   <!-- ========== HERO ========== -->
   <section id="inicio" class="hero">
@@ -83,29 +85,36 @@
   </div>
 
   <!-- ========== CUENTA REGRESIVA ========== -->
-  <section id="cuenta" class="cuenta-bg">
+  <section id="cuenta" class="cuenta-bg cuenta-finalizada">
     <div class="contenedor">
       <div class="titulo-seccion animar-entrada">
-        <h2>Faltan solo...</h2>
-        <p>¡El gran día se acerca y no podemos esperar para celebrar juntas!</p>
+        <h2>Un momento que ya celebramos</h2>
+        <p>La espera terminó y ahora nos quedan todos los recuerdos de ese día tan especial.</p>
         <div class="linea-decorativa"></div>
       </div>
-      <div class="cuenta-grid">
-        <div class="cuenta-item animar-entrada retraso-1">
-          <span class="cuenta-numero" id="dias">--</span>
-          <span class="cuenta-label">Días</span>
+      <div class="cuenta-escena animar-entrada">
+        <div class="cuenta-grid" aria-hidden="true">
+          <div class="cuenta-item">
+            <span class="cuenta-numero" id="dias">00</span>
+            <span class="cuenta-label">Días</span>
+          </div>
+          <div class="cuenta-item">
+            <span class="cuenta-numero" id="horas">00</span>
+            <span class="cuenta-label">Horas</span>
+          </div>
+          <div class="cuenta-item">
+            <span class="cuenta-numero" id="minutos">00</span>
+            <span class="cuenta-label">Minutos</span>
+          </div>
+          <div class="cuenta-item">
+            <span class="cuenta-numero" id="segundos">00</span>
+            <span class="cuenta-label">Segundos</span>
+          </div>
         </div>
-        <div class="cuenta-item animar-entrada retraso-2">
-          <span class="cuenta-numero" id="horas">--</span>
-          <span class="cuenta-label">Horas</span>
-        </div>
-        <div class="cuenta-item animar-entrada retraso-3">
-          <span class="cuenta-numero" id="minutos">--</span>
-          <span class="cuenta-label">Minutos</span>
-        </div>
-        <div class="cuenta-item animar-entrada retraso-4">
-          <span class="cuenta-numero" id="segundos">--</span>
-          <span class="cuenta-label">Segundos</span>
+        <div class="cuenta-mensaje-final" role="status">
+          <span>♡</span>
+          <h3>Evento ya realizado</h3>
+          <p>Gracias por haber sido parte de esta dulce espera.</p>
         </div>
       </div>
     </div>
